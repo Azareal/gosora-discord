@@ -1,0 +1,2 @@
+# gosora-discord
+Coming Soon.
