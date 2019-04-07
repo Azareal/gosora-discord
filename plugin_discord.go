@@ -23,7 +23,7 @@ func discordValidate() error {
 		return errors.New("You need to set a webhook to push to in config.json")
 	}
 
-	ev, ok := common.PluginConfig["DiscordEvents"]
+	ev := common.PluginConfig["DiscordEvents"]
 	if ev != "" && ev != "threads" && ev != "replies" {
 		return errors.New("Invalid value for DiscordEvents. Can only be blank, 'threads' or 'replies'")
 	}
@@ -76,10 +76,8 @@ type DiscordData struct {
 }
 
 func discordEvent(typ int, id int) {
-	ev, ok := common.PluginConfig["DiscordEvents"]
-	if !ok {
-		return
-	}
+	//fmt.Println("in discordEvent")
+	ev := common.PluginConfig["DiscordEvents"]
 	if (ev == "threads" && typ != 0) || (ev == "replies" && typ != 1) {
 		return
 	}
@@ -139,10 +137,12 @@ func discordEvent(typ int, id int) {
 		common.LogWarning(err)
 		return
 	}
+	//fmt.Println("before discord push")
 	_, err = client.Post(common.PluginConfig["DiscordWebhook"], "application/json", bytes.NewBuffer(data))
 	if err != nil {
 		common.LogWarning(err)
 	}
+	common.DebugLog("Pushed event to Discord")
 }
 
 // TODO: Add a settings page or something?
