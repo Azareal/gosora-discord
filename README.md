@@ -14,7 +14,7 @@ You can install this plugin simply by throwing it in Gosora's folder before buil
 
 You can configure this plugin via your [config.json file](https://github.com/Azareal/Gosora/blob/master/docs/configuration.md).
 
-DiscordWebhook - The webhook URL for the Discord channel you're trying to push events to. This is required for this plugin to function.
+DiscordWebhook - The [webhook URL](https://support.discordapp.com/hc/en-us/articles/228383668-Intro-to-Webhooks) for the Discord channel you're trying to push events to. This is required for this plugin to function.
 
 DiscordForums - A comma separated list of IDs of the forum (or forums) you want this plugin to listen to. Defaults to all of them.
 
