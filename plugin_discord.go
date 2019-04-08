@@ -71,8 +71,21 @@ func discordEventReply(args ...interface{}) (skip bool, rerr common.RouteError) 
 }
 
 type DiscordData struct {
-	Content  string `json:"content"`
-	Username string `json:"username"`
+	Username string         `json:"username"`
+	Embeds   []DiscordEmbed `json:"embeds"`
+}
+
+type DiscordEmbed struct {
+	Title  string             `json:"title"`
+	Desc   string             `json:"description"`
+	URL    string             `json:"url"`
+	Author DiscordEmbedAuthor `json:"author"`
+}
+
+type DiscordEmbedAuthor struct {
+	Name   string `json:"name"`
+	URL    string `json:"url"`
+	Avatar string `json:"icon_url"`
 }
 
 func discordEvent(typ int, id int) {
@@ -82,26 +95,35 @@ func discordEvent(typ int, id int) {
 		return
 	}
 
-	var content string
+	var content, url string
 	var topic *common.Topic
 	var err error
+	var createdBy int
 	if typ == 0 {
 		topic, err = common.Topics.Get(id)
 		if err != nil {
 			return
 		}
 		content = topic.Content
+		createdBy = topic.CreatedBy
 	} else {
 		reply, err := common.Rstore.Get(id)
 		if err != nil {
 			return
 		}
 		content = reply.Content
+		createdBy = reply.CreatedBy
 
 		topic, err = reply.Topic()
 		if err != nil {
 			return
 		}
+	}
+	url = topic.Link
+
+	user, err := common.Users.Get(createdBy)
+	if err != nil {
+		return
 	}
 
 	fidsRaw := common.PluginConfig["DiscordForums"]
@@ -131,12 +153,16 @@ func discordEvent(typ int, id int) {
 			TLSHandshakeTimeout: 5 * time.Second,
 		},
 	}
-	dat := DiscordData{Content: content, Username: common.Site.Name}
+
+	author := DiscordEmbedAuthor{Name: user.Name, URL: user.Link, Avatar: user.MicroAvatar}
+	embed := DiscordEmbed{Title: topic.Title, Desc: content, URL: url, Author: author}
+	dat := DiscordData{Username: common.Site.Name, Embeds: []DiscordEmbed{embed}}
 	data, err := json.Marshal(dat)
 	if err != nil {
 		common.LogWarning(err)
 		return
 	}
+
 	//fmt.Println("before discord push")
 	_, err = client.Post(common.PluginConfig["DiscordWebhook"], "application/json", bytes.NewBuffer(data))
 	if err != nil {
