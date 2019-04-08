@@ -164,11 +164,13 @@ func discordEvent(typ int, id int) {
 	}
 
 	//fmt.Println("before discord push")
-	_, err = client.Post(common.PluginConfig["DiscordWebhook"], "application/json", bytes.NewBuffer(data))
+	resp, err = client.Post(common.PluginConfig["DiscordWebhook"], "application/json", bytes.NewBuffer(data))
 	if err != nil {
 		common.LogWarning(err)
 	}
 	common.DebugLog("Pushed event to Discord")
+	common.DebugLogf("Sent: %+v\n", string(data))
+	common.DebugLogf("Response: %+v\n", resp)
 }
 
 // TODO: Add a settings page or something?
