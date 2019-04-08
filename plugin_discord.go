@@ -156,8 +156,21 @@ func discordEvent(typ int, id int) {
 		},
 	}
 
-	author := DiscordEmbedAuthor{Name: user.Name, URL: user.Link, Avatar: user.MicroAvatar}
-	embed := DiscordEmbed{Title: topic.Title, Desc: content, URL: url, Author: author}
+	var s string
+	if common.Site.EnableSsl {
+		s = "s"
+	}
+	var preURL = "http" + s + "://" + common.Site.URL
+
+	var avatar = user.MicroAvatar
+	if len(user.MicroAvatar) > 1 {
+		if user.MicroAvatar[0] == '/' && user.MicroAvatar[1] != '/' {
+			avatar = preURL + avatar
+		}
+	}
+
+	author := DiscordEmbedAuthor{Name: user.Name, URL: preURL + user.Link, Avatar: avatar}
+	embed := DiscordEmbed{Title: topic.Title, Desc: content, URL: preURL + url, Author: author}
 	dat := DiscordData{Username: common.Site.Name, Embeds: []DiscordEmbed{embed}}
 	data, err := json.Marshal(dat)
 	if err != nil {
