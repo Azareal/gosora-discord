@@ -19,3 +19,7 @@ DiscordWebhook - The webhook URL for the Discord channel you're trying to push e
 DiscordForums - A comma separated list of IDs of the forum (or forums) you want this plugin to listen to. Defaults to all of them.
 
 DiscordEvents - The events you want this plugin to listen to. You can set this to `topics` to only have it listen to new topics being created and to `replies` to only listen to new replies being created. For both, you can just leave this blank. Default: Both.
+
+# Future Features
+
+I'd like to add more Discord integration features like syncing Discord ranks with forum ranks and maybe Discord accounts with user accounts.
