@@ -164,7 +164,7 @@ func discordEvent(typ int, id int) {
 	}
 
 	//fmt.Println("before discord push")
-	resp, err = client.Post(common.PluginConfig["DiscordWebhook"], "application/json", bytes.NewBuffer(data))
+	resp, err := client.Post(common.PluginConfig["DiscordWebhook"], "application/json", bytes.NewBuffer(data))
 	if err != nil {
 		common.LogWarning(err)
 	}
