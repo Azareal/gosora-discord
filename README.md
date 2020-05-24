@@ -8,7 +8,7 @@ A recent build of [Gosora](https://github.com/Azareal/Gosora).
 
 # Installation
 
-You can install this plugin simply by throwing it in Gosora's folder before building / running it.
+You can install this plugin simply by throwing it in Gosora's /extend/ folder before building / running it.
 
 # Options
 
