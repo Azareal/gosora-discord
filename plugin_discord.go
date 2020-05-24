@@ -99,7 +99,7 @@ type DiscordEmbedAuthor struct {
 	Avatar string `json:"icon_url"`
 }
 
-func discordEvent(typ int, id int) {
+func discordEvent(typ, id int) {
 	//fmt.Println("in discordEvent")
 	ev := c.PluginConfig["DiscordEvents"]
 	if (ev == "threads" && typ != 0) || (ev == "replies" && typ != 1) {
@@ -187,41 +187,43 @@ func discordEvent(typ int, id int) {
 		return
 	}
 
-	//fmt.Println("before discord push")
-	resp, err := client.Post(c.PluginConfig["DiscordWebhook"], "application/json", bytes.NewBuffer(data))
-	var body string
-	respErr := func(err error) {
-		log.Printf("Sent: %+v\n", string(data))
-		log.Printf("Response: %+v\n", resp)
-		if body != "" {
-			log.Printf("Response Body: %+v\n", body)
+	go func() {
+		//fmt.Println("before discord push")
+		resp, err := client.Post(c.PluginConfig["DiscordWebhook"], "application/json", bytes.NewBuffer(data))
+		var body string
+		respErr := func(err error) {
+			log.Printf("Sent: %+v\n", string(data))
+			log.Printf("Response: %+v\n", resp)
+			if body != "" {
+				log.Printf("Response Body: %+v\n", body)
+			}
+			c.LogWarning(err)
 		}
-		c.LogWarning(err)
-	}
 
-	if err != nil {
-		respErr(err)
-		return
-	}
-	defer resp.Body.Close()
+		if err != nil {
+			respErr(err)
+			return
+		}
+		defer resp.Body.Close()
 
-	// TODO: Cap the amount we read
-	bBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		respErr(err)
-		return
-	}
-	body = string(bBody)
+		// TODO: Cap the amount we read
+		bBody, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			respErr(err)
+			return
+		}
+		body = string(bBody)
 
-	if resp.StatusCode != 200 {
-		respErr(err)
-		return
-	}
+		if resp.StatusCode != 200 {
+			respErr(err)
+			return
+		}
 
-	c.DebugLog("Pushed event to Discord")
-	c.DebugLogf("Sent: %+v\n", string(data))
-	c.DebugLogf("Response: %+v\n", resp)
-	c.DebugLogf("Response Body: %+v\n", body)
+		c.DebugLog("Pushed event to Discord")
+		c.DebugLogf("Sent: %+v\n", string(data))
+		c.DebugLogf("Response: %+v\n", resp)
+		c.DebugLogf("Response Body: %+v\n", body)
+	}()
 }
 
 // TODO: Add a settings page or something?
