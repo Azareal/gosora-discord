@@ -215,7 +215,7 @@ func discordEvent(typ, id int) {
 		body = string(bBody)
 
 		if resp.StatusCode != 200 {
-			respErr(err)
+			respErr(errors.New("resp.StatusCode is " + strconv.Itoa(resp.StatusCode)))
 			return
 		}
 
